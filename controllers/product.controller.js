@@ -1,5 +1,6 @@
 const Product = require('../models/product.model');
 
+
 //Simple version, without validation or sanitation
 exports.test = function (req, res) {
     res.send('Greetings from the Test controller!');
@@ -26,9 +27,17 @@ exports.product_create = function (req, res) {
     })
 };
 
+//read all
+exports.product_all = function (req, res) {
+    Product.find( function (err, product) {
+        if (err) return next(err);
+        res.json(product);
+    })
+};
+
 //read
 exports.product_details = function (req, res) {
-    Product.find(function (err, product) {
+    Product.findById(req.params.id, function (err, product) {
         if (err) return next(err);
         res.send(product);
     })
