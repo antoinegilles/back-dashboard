@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const product = require('./routes/product.route'); // Imports routes for the products
 const app = express();
+var session = require('express-session');
 
 
 app.use(function (req, res, next) {
@@ -24,6 +25,12 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/user', product);
+//use sessions for tracking logins
+app.use(session({
+    secret: 'work hard',
+    resave: true,
+    saveUninitialized: false
+  }));
 
 const port = 8080;
 

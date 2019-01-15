@@ -6,8 +6,11 @@ exports.test = function (req, res) {
     res.send('Greetings from the Test controller!');
 };
 
+//create
 exports.product_create = function (req, res) {
     console.log(req.body)
+    if (req.body.name && 
+        req.body.password) {
     let product = new Product(
         {
             name: req.body.name,
@@ -15,8 +18,10 @@ exports.product_create = function (req, res) {
             urlNextcloud: req.body.urlNextcloud,
             urlGitea: req.body.urlGitea,
             urlTrello: req.body.urlTrello,
+            password: req.body.password
         
         }
+    
     );
 
     product.save(function (err) {
@@ -25,7 +30,7 @@ exports.product_create = function (req, res) {
         }
         res.send('Product Created successfully')
     })
-};
+}};
 
 //read all
 exports.product_all = function (req, res) {
