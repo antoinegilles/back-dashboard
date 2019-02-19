@@ -6,34 +6,36 @@ const app = express();
 var session = require('express-session');
 
 
+
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
+
 // Set up mongoose connection
 const mongoose = require('mongoose');
 const dev_db_url = 'mongodb://localhost:27017';
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB);
-
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/user', product);
+
 //use sessions for tracking logins
 app.use(session({
-    secret: 'work hard',
-    resave: true,
-    saveUninitialized: false
-  }));
+  secret: 'keyprivate',
+  resave: true,
+  saveUninitialized: false
+}));
+
 
 const port = 8080;
-
 app.listen(port, () => {
     console.log('Server is up and running on port ' + port);
 });

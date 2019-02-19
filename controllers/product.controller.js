@@ -1,4 +1,5 @@
 const Product = require('../models/product.model');
+var bcrypt = require('bcrypt');
 
 
 //Simple version, without validation or sanitation
@@ -6,11 +7,31 @@ exports.test = function (req, res) {
     res.send('Greetings from the Test controller!');
 };
 
-//create
+//Connexion
+exports.product_login = function (req, res, callback) {
+    Product.find({ name: req.body.name }).exec(function (err, Product) {
+        console.log(Product[0].name)
+        if (err) {
+          return callback(err)
+        } else if (!Product) {
+          var err = new Error('Profil not found.');
+          err.status = 401;
+          return callback(err);
+        }
+        bcrypt.compare(req.body.password, Product[0].password, function (err, result) {
+          if (result == true) {
+            return console.log("trouvé")
+          } else {
+
+            return console.log("pas trouvé")
+          }
+        })
+      });
+  }
+
+//Create
 exports.product_create = function (req, res) {
-    console.log(req.body)
-    if (req.body.name && 
-        req.body.password) {
+
     let product = new Product(
         {
             name: req.body.name,
@@ -23,14 +44,28 @@ exports.product_create = function (req, res) {
         }
     
     );
+    
+    Product.find( {name :product.name}, function (err, Product) {
+        if (err) return next(err);
+        if(Product.length){
+            console.log("utilisateur deja present")
+            var present = "Utilisateur déja inscrit"
+            res.send(present)
 
-    product.save(function (err) {
-        if (err) {
-            return next(err);
-        }
-        res.send('Product Created successfully')
+        }else{
+            console.log("Utilisateur non present")
+            product.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                var inscrit = "Utilisateur inscrit"
+                res.send(inscrit)
+            })
+        }    
     })
-}};
+
+    
+};
 
 //read all
 exports.product_all = function (req, res) {

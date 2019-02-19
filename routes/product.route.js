@@ -12,7 +12,7 @@ module.exports = router;
 // create 
 router.post('/create', product_controller.product_create);
 // check login
-//router.post('/login', product_controller.product_login);
+router.post('/login', product_controller.product_login);
 //read ALL product
 router.get('/read', product_controller.product_all);
 //read by id
