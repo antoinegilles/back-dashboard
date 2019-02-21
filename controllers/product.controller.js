@@ -2,6 +2,9 @@ const Product = require('../models/product.model');
 var bcrypt = require('bcrypt');
 
 
+
+
+
 //Simple version, without validation or sanitation
 exports.test = function (req, res) {
     res.send('Greetings from the Test controller!');
@@ -20,14 +23,30 @@ exports.product_login = function (req, res, callback) {
         }
         bcrypt.compare(req.body.password, Product[0].password, function (err, result) {
           if (result == true) {
-            return console.log("trouvé")
+              console.log("connecté")
+            return res.send("url gitea : " + Product[0].urlGitea + "url gitea : " + Product[0].urlNextcloud + "url gitea : "+Product[0].urlTrello)
           } else {
 
-            return console.log("pas trouvé")
+            return res.send("Vérifiez votre identifiant / mot de passe")
           }
         })
       });
+      
   }
+
+//Deconnexion
+exports.product_logout = function (req, res) {
+    if (req.session) {
+        // delete session object
+        req.session.destroy(function(err) {
+          if(err) {
+            return next(err);
+          } else {
+            return res.redirect('/');
+          }
+        });
+      }
+};
 
 //Create
 exports.product_create = function (req, res) {
@@ -45,24 +64,26 @@ exports.product_create = function (req, res) {
     
     );
     
-    Product.find( {name :product.name}, function (err, Product) {
+    Product.find( {name :product.name}, function (err, ProductFind) {
         if (err) return next(err);
-        if(Product.length){
+        if(ProductFind.length){
             console.log("utilisateur deja present")
             var present = "Utilisateur déja inscrit"
             res.send(present)
 
         }else{
             console.log("Utilisateur non present")
-            product.save(function (err) {
-                if (err) {
-                    return next(err);
+            Product.create(product, function (error, user) {
+                if (error) {
+                  return next(error);
+                } else {
+                  // A CHECKER req.session.userId = user._id;
+                  console.log(user._id) 
+                  return console.log("ok")
                 }
-                var inscrit = "Utilisateur inscrit"
-                res.send(inscrit)
-            })
-        }    
-    })
+              });
+        }
+       })
 
     
 };

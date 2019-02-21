@@ -47,3 +47,4 @@ UserSchema.pre('save', function (next) {
 
  // Export the model (user is the table)
 module.exports = mongoose.model('user', UserSchema);
+
