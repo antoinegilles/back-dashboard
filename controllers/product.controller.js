@@ -12,27 +12,49 @@ exports.test = function (req, res) {
 
 //Connexion
 exports.product_login = function (req, res, callback) {
-    Product.find({ name: req.body.name }).exec(function (err, Product) {
-        console.log(Product[0].name)
-        if (err) {
-          return callback(err)
-        } else if (!Product) {
-          var err = new Error('Profil not found.');
-          err.status = 401;
-          return callback(err);
-        }
-        bcrypt.compare(req.body.password, Product[0].password, function (err, result) {
-          if (result == true) {
-              console.log("connecté")
-            return res.send("url gitea : " + Product[0].urlGitea + "url gitea : " + Product[0].urlNextcloud + "url gitea : "+Product[0].urlTrello)
-          } else {
+  Product.find({ name: req.body.name })
+  .exec(function (err, Product) {
+      if (err) {
+        return callback(err)
+      } 
+      else if (!Product) {
+       return console.log("nononono")
+      }
+      else if (Product != undefined && Product.length){
 
-            return res.send("Vérifiez votre identifiant / mot de passe")
-          }
-        })
-      });
-      
-  }
+      bcrypt.compare(req.body.password, Product[0].password, function (err, result) {
+        if (result == true) {
+          req.session.userId = Product[0].id;
+          // rediriger vers la page profile
+          console.log(req.session.userId)
+          return res.status(200).send(req.session.userId)
+        } else {
+
+          return console.log("pas trouvé")
+        }
+      })
+    } else{
+      return res.send("Vérifiez vos informations")
+    }
+    });
+}
+
+  // GET route after registering
+  exports.product_profil = function (req, res, next) {
+  User.findById(req.session.userId).exec(function (error, user) {
+      if (error) {
+        return next(error);
+      } else {
+        if (user === null) {
+          var err = new Error('Not authorized! Go back!');
+          err.status = 400;
+          return next(err);
+        } else {
+          return res.send('<h1>Name: </h1>' + user.name + '<h2>Mail: </h2>' + user.surname + '<br><a type="button" href="/logout">Logout</a>')
+        }
+      }
+    });
+};
 
 //Deconnexion
 exports.product_logout = function (req, res) {
@@ -42,7 +64,7 @@ exports.product_logout = function (req, res) {
           if(err) {
             return next(err);
           } else {
-            return res.redirect('/');
+            return res.redirect('/login');
           }
         });
       }
@@ -77,9 +99,8 @@ exports.product_create = function (req, res) {
                 if (error) {
                   return next(error);
                 } else {
-                  // A CHECKER req.session.userId = user._id;
-                  console.log(user._id) 
-                  return console.log("ok")
+                  req.session.userId = user._id;
+                  return res.send("Utilisateur créé")
                 }
               });
         }

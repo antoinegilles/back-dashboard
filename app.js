@@ -8,12 +8,17 @@ var MongoStore = require('connect-mongo')(session);
 
 
 
-
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
+
+
+
+
+
+
 
 // Set up mongoose connection
 const mongoose = require('mongoose');
@@ -25,10 +30,6 @@ const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use('/user', product);
-
 //use sessions for tracking logins
 app.use(session({
   secret: 'work hard',
@@ -38,20 +39,10 @@ app.use(session({
     mongooseConnection: db
   })
 }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use('/user', product);
 
-//logout
-app.get('/logout', function(req, res, next) {
-  if (req.session) {
-    // delete session object
-    req.session.destroy(function(err) {
-      if(err) {
-        return next(err);
-      } else {
-        return res.redirect('/');
-      }
-    });
-  }
-});
 
 const port = 8080;
 app.listen(port, () => {
