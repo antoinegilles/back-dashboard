@@ -2,9 +2,6 @@ const Product = require('../models/product.model');
 var bcrypt = require('bcrypt');
 
 
-
-
-
 //Simple version, without validation or sanitation
 exports.test = function (req, res) {
     res.send('Greetings from the Test controller!');
@@ -15,26 +12,22 @@ exports.product_login = function (req, res, callback) {
   Product.find({ name: req.body.name })
   .exec(function (err, Product) {
       if (err) {
-        return callback(err)
+        return res.status(404)
       } 
-      else if (!Product) {
-       return console.log("nononono")
-      }
       else if (Product != undefined && Product.length){
-
-      bcrypt.compare(req.body.password, Product[0].password, function (err, result) {
+        bcrypt.compare(req.body.password, Product[0].password, function (err, result) {
         if (result == true) {
           req.session.userId = Product[0].id;
-          // rediriger vers la page profile
-          console.log(req.session.userId)
+          // Si le mot de passe correspond a l'identifiant
           return res.status(200).send(req.session.userId)
         } else {
-
-          return console.log("pas trouvé")
+          // Si le mot de passe ne correspond pas a l'identifiant
+          return res.status(404)
         }
       })
     } else{
-      return res.send("Vérifiez vos informations")
+      // En cas d'erreur d'autre type
+      return res.status(404).send("erreur")
     }
     });
 }
@@ -64,7 +57,7 @@ exports.product_logout = function (req, res) {
           if(err) {
             return next(err);
           } else {
-            return res.redirect('/login');
+            return res.send("deconnexion");
           }
         });
       }
