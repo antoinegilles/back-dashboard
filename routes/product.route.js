@@ -11,10 +11,10 @@ router.get('/test', product_controller.test);
 router.post('/create', product_controller.product_create);
 // check login
 router.post('/login', product_controller.product_login);
-// Profil
-router.get('/user', product_controller.product_profil);
 //read ALL product
 router.get('/read', product_controller.product_all);
+// Get profil
+router.get('/profile', product_controller.product_all);
 //Logout
 router.get('/logout', product_controller.product_logout);
 //read by id

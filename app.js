@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const product = require('./routes/product.route'); // Imports routes for the products
 const app = express();
 const session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
 
 
 
@@ -13,11 +12,6 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
-
-
-
-
-
 
 
 // Set up mongoose connection
@@ -34,11 +28,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.use(session({
   secret: 'work hard',
   resave: true,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongooseConnection: db
-  })
+  saveUninitialized: false
 }));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/user', product);

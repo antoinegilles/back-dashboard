@@ -6,10 +6,9 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name:{type: String, required: true, minlength: 5,maxlength: 50},
     surname:{type: String, required: true, minlength: 5,maxlength: 50},
-    urlNextcloud:{type:String, required:true},
-    urlGitea:{type:String, required:true},
-    urlTrello:{type:String, required:true},
     password: {type: String, required: true, minlength: 5, maxlength: 1024},
+    etude:{type: Number, required:true, min:0, max:10},
+    specialite:{type:String, required:true}
 });
 
 // Authenticate input against database

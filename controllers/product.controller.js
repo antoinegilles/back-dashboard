@@ -9,6 +9,7 @@ exports.test = function (req, res) {
 
 //Connexion
 exports.product_login = function (req, res, callback) {
+    
   Product.find({ name: req.body.name })
   .exec(function (err, Product) {
       if (err) {
@@ -32,22 +33,6 @@ exports.product_login = function (req, res, callback) {
     });
 }
 
-  // GET route after registering
-  exports.product_profil = function (req, res, next) {
-  User.findById(req.session.userId).exec(function (error, user) {
-      if (error) {
-        return next(error);
-      } else {
-        if (user === null) {
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
-        } else {
-          return res.send('<h1>Name: </h1>' + user.name + '<h2>Mail: </h2>' + user.surname + '<br><a type="button" href="/logout">Logout</a>')
-        }
-      }
-    });
-};
 
 //Deconnexion
 exports.product_logout = function (req, res) {
@@ -70,10 +55,9 @@ exports.product_create = function (req, res) {
         {
             name: req.body.name,
             surname: req.body.surname,
-            urlNextcloud: req.body.urlNextcloud,
-            urlGitea: req.body.urlGitea,
-            urlTrello: req.body.urlTrello,
-            password: req.body.password
+            password: req.body.password,
+            etude: req.body.etude,
+            specialite: req.body.specialite
         
         }
     
@@ -91,9 +75,13 @@ exports.product_create = function (req, res) {
             Product.create(product, function (error, user) {
                 if (error) {
                   return next(error);
-                } else {
+                } 
+                else if(req.body.etude.length === 0){
+                  console.log("le champ etude est vide")
+                }
+                else {
                   req.session.userId = user._id;
-                  return res.send("Utilisateur créé")
+                  return res.status(200).send(req.session.userId)
                 }
               });
         }
